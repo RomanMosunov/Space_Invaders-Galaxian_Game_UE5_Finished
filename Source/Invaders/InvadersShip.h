@@ -6,6 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "InvadersShip.generated.h"
 
+class USphereComponent;
+class UStaticMeshComponent;
+class UFloatingPawnMovement;
+
 UCLASS()
 class INVADERS_API AInvadersShip : public APawn
 {
@@ -18,6 +22,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly) TObjectPtr<USphereComponent> ShipCollision;
+	UPROPERTY(EditDefaultsOnly) TObjectPtr<UStaticMeshComponent> ShipMesh;
+	UPROPERTY(EditDefaultsOnly) TObjectPtr<UFloatingPawnMovement> ShipMovement;
 
 public:	
 	// Called every frame
