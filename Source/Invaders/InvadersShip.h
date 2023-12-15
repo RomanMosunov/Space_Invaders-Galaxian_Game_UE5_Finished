@@ -4,11 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "InputActionValue.h"
 #include "InvadersShip.generated.h"
 
 class USphereComponent;
 class UStaticMeshComponent;
 class UFloatingPawnMovement;
+class UInputMappingContext;
+struct FInputActionValue;
+class UInputAction;
 
 UCLASS()
 class INVADERS_API AInvadersShip : public APawn
@@ -26,6 +30,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<USphereComponent> ShipCollision;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UStaticMeshComponent> ShipMesh;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UFloatingPawnMovement> ShipMovement;
+	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputMappingContext> InputMapping;
+	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputAction>MoveAction;
+
+	void Move(const FInputActionValue& Value);
 
 public:	
 	// Called every frame

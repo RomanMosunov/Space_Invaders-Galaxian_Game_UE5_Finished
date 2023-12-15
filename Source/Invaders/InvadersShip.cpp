@@ -4,6 +4,10 @@
 #include "Components/SphereComponent.h"
 #include"Components/StaticmeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "InvadersPlayerController.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "Components/InputComponent.h"
 
 // Sets default values
 AInvadersShip::AInvadersShip()
@@ -30,6 +34,21 @@ void AInvadersShip::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	const AInvadersPlayerController* PlayerController = Cast<AInvadersPlayerController>(GetController());
+	if (PlayerController)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(InputMapping, 0);
+		}
+	}
+}
+
+void AInvadersShip::Move(const FInputActionValue& Value)
+{
+	const float FloatValue = Value.Get<float>();
+	const FVector RightVector = GetActorRightVector();
+	AddMovementInput(RightVector, FloatValue);
 }
 
 // Called every frame
@@ -44,5 +63,8 @@ void AInvadersShip::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AInvadersShip::Move);
+	}
 }
-
