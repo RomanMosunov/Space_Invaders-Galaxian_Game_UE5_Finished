@@ -32,8 +32,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UFloatingPawnMovement> ShipMovement;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputMappingContext> InputMapping;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputAction>MoveAction;
+	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputAction>FireAction;
+	UPROPERTY(EditDefaultsOnly) TSubclassOf<AActor>ActorToSpawn;
+
+	FTimerHandle ReloadTimerHandle;
+	bool CanShoot = true;
+	float ReloadTime = 0.5;
 
 	void Move(const FInputActionValue& Value);
+	void Fire(const FInputActionValue& Value);
+	void Reload();
+	void SpawnActor();
 
 public:	
 	// Called every frame
@@ -41,5 +50,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };

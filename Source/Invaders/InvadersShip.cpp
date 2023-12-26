@@ -51,11 +51,35 @@ void AInvadersShip::Move(const FInputActionValue& Value)
 	AddMovementInput(RightVector, FloatValue);
 }
 
+void AInvadersShip::Fire(const FInputActionValue& Value)
+{
+	if(CanShoot)
+	{
+		CanShoot = false;
+		SpawnActor();
+		GetWorldTimerManager().SetTimer(ReloadTimerHandle, this, &AInvadersShip::Reload, ReloadTime, false);
+	}
+}
+
+void AInvadersShip::Reload()
+{
+	GetWorldTimerManager().ClearTimer(ReloadTimerHandle);
+	CanShoot = true;
+}
+
+void AInvadersShip::SpawnActor()
+{
+	const FVector SpawnLoc = GetActorLocation() + FVector(0.0, 0.0, 100.0);
+	if (UWorld* World = GetWorld())
+	{
+		World->SpawnActor<AActor>(ActorToSpawn, SpawnLoc, FRotator::ZeroRotator);
+	}
+}
+
 // Called every frame
 void AInvadersShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -66,5 +90,6 @@ void AInvadersShip::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AInvadersShip::Move);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AInvadersShip::Fire);
 	}
 }
