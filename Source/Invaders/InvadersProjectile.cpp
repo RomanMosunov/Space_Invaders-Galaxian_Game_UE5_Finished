@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "InvadersEnemy.h"
 
 // Sets default values
 AInvadersProjectile::AInvadersProjectile()
@@ -26,6 +27,8 @@ AInvadersProjectile::AInvadersProjectile()
 	ProjectileCollision->SetCapsuleRadius(20.0);
 	ProjectileMesh->SetRelativeScale3D(FVector(0.4, 0.4, 0.6));
 	SetLifeSpan(4.0);
+
+	ProjectileCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::ProjectileOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +36,14 @@ void AInvadersProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AInvadersProjectile::ProjectileOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Cast<AInvadersEnemy>(OtherActor))
+	{
+		Destroy();
+	}
 }
 
 // Called every frame
