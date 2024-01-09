@@ -13,6 +13,7 @@ class UFloatingPawnMovement;
 class UInputMappingContext;
 struct FInputActionValue;
 class UInputAction;
+class UNiagaraSystem;
 
 UCLASS()
 class INVADERS_API AInvadersShip : public APawn
@@ -34,6 +35,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputAction>MoveAction;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputAction>FireAction;
 	UPROPERTY(EditDefaultsOnly) TSubclassOf<AActor>ActorToSpawn;
+	UPROPERTY(EditDefaultsOnly) TObjectPtr <UNiagaraSystem> NiagaraSystem;
 
 	FTimerHandle ReloadTimerHandle;
 	bool CanShoot = true;
@@ -43,6 +45,7 @@ protected:
 	void Fire(const FInputActionValue& Value);
 	void Reload();
 	void SpawnActor();
+	UFUNCTION() void SpawnTrace() const;
 
 public:	
 	// Called every frame

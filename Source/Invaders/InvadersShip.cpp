@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 AInvadersShip::AInvadersShip()
@@ -27,6 +28,7 @@ AInvadersShip::AInvadersShip()
 	ShipCollision->SetSphereRadius(50.0);
 	ShipMesh->SetupAttachment(ShipCollision);
 	ShipCollision->SetCollisionProfileName(TEXT("Pawn"));
+	NiagaraSystem = LoadObject<UNiagaraSystem>(nullptr, TEXT("/Game/Resources/NS_Trace"));
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +51,7 @@ void AInvadersShip::Move(const FInputActionValue& Value)
 	const float FloatValue = Value.Get<float>();
 	const FVector RightVector = GetActorRightVector();
 	AddMovementInput(RightVector, FloatValue);
+	SpawnTrace();
 }
 
 void AInvadersShip::Fire(const FInputActionValue& Value)
@@ -73,6 +76,14 @@ void AInvadersShip::SpawnActor()
 	if (UWorld* World = GetWorld())
 	{
 		World->SpawnActor<AActor>(ActorToSpawn, SpawnLoc, FRotator::ZeroRotator);
+	}
+}
+
+void AInvadersShip::SpawnTrace() const
+{
+	if (NiagaraSystem)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NiagaraSystem, GetActorLocation());
 	}
 }
 

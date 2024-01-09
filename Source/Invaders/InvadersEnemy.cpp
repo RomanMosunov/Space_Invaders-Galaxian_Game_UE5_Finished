@@ -4,6 +4,8 @@
 #include "InvadersEnemy.h"
 #include "Components/BoxComponent.h"
 #include "InvadersProjectile.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AInvadersEnemy::AInvadersEnemy()
@@ -21,6 +23,8 @@ AInvadersEnemy::AInvadersEnemy()
 	EnemyMesh->SetupAttachment(EnemyCollision);
 	EnemyCollision->SetBoxExtent(FVector(51.0, 51.0, 51.0));
 	EnemyCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::EnemyOverlap);
+	NiagaraSystem = LoadObject<UNiagaraSystem>(nullptr, TEXT("/Game/Resources/NS_Burst"));
+	BlastSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Resources/SW_Blast"));
 }
 
 // Called when the game starts or when spawned
@@ -34,7 +38,25 @@ void AInvadersEnemy::EnemyOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (Cast<AInvadersProjectile>(OtherActor))
 	{
+		SpawnExplosionFX();
+		SpawnSound();
 		Destroy();
+	}
+}
+
+void AInvadersEnemy::SpawnExplosionFX() const
+{
+	if (NiagaraSystem)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NiagaraSystem, GetActorLocation());
+	}
+}
+
+void AInvadersEnemy::SpawnSound() const
+{
+	if (BlastSound)
+	{
+		UGameplayStatics::PlaySound2D(this, BlastSound);
 	}
 }
 
