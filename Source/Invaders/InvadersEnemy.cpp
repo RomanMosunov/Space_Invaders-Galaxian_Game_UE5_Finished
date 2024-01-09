@@ -6,6 +6,7 @@
 #include "InvadersProjectile.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/BrushComponent.h"
 
 // Sets default values
 AInvadersEnemy::AInvadersEnemy()
@@ -31,7 +32,11 @@ AInvadersEnemy::AInvadersEnemy()
 void AInvadersEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (FTimerHandle MoveTimer; !MoveTimer.IsValid())
+	{
+		GetWorldTimerManager().SetTimer(MoveTimer, this, &ThisClass::Move, 0.05, true);
+	}
 }
 
 void AInvadersEnemy::EnemyOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -41,6 +46,11 @@ void AInvadersEnemy::EnemyOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		SpawnExplosionFX();
 		SpawnSound();
 		Destroy();
+	}
+
+	else if (Cast<UBrushComponent>(OtherComp))
+	{
+		ChangeDirection();
 	}
 }
 
@@ -60,10 +70,22 @@ void AInvadersEnemy::SpawnSound() const
 	}
 }
 
-// Called every frame
-void AInvadersEnemy::Tick(float DeltaTime)
+void AInvadersEnemy::Move()
 {
-	Super::Tick(DeltaTime);
-
+	const FVector NewLocation = GetActorLocation() + FVector(0.0, MoveDirection, 0.0);
+	SetActorLocation(NewLocation);
 }
 
+void AInvadersEnemy::ChangeDirection()
+{
+	TArray <AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), StaticClass(), OutActors);
+		for (AActor* EnemyActor : OutActors)
+		{
+			if
+				(AInvadersEnemy* Enemy = Cast<AInvadersEnemy>(EnemyActor))
+				{
+					Enemy->MoveDirection *= -1.0;
+				}
+		}
+}
