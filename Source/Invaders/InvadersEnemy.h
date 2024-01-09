@@ -27,12 +27,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly) TObjectPtr <UStaticMeshComponent> EnemyMesh;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr <UNiagaraSystem> NiagaraSystem;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr <USoundBase> BlastSound;
-
+	UPROPERTY(EditDefaultsOnly) TSubclassOf<AActor> ActorToSpawn;
+	
+	FTimerHandle ReloadTimerHandle;
 	double MoveDirection = -1.0;
+	int32 ProjectilesCount;
+	const int32 ProjectilesMax = 5;
 
 	UFUNCTION() void EnemyOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	void SpawnExplosionFX() const;
 	void SpawnSound() const;
 	void Move();
-	void ChangeDirection();
+	void ChangeDirection() const;
+	void BeginFire();
+	void SpawnProjectile();
+	void ProjectileCheck();
 };

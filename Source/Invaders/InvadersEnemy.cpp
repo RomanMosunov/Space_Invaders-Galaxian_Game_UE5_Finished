@@ -1,19 +1,15 @@
 // Copy Right
 
-
 #include "InvadersEnemy.h"
 #include "Components/BoxComponent.h"
 #include "InvadersProjectile.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BrushComponent.h"
+#include "InvadersProjectileEnemy.h"
 
-// Sets default values
 AInvadersEnemy::AInvadersEnemy()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	EnemyCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("EnemyCollision"));
 	EnemyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyMesh"));
 
@@ -28,11 +24,11 @@ AInvadersEnemy::AInvadersEnemy()
 	BlastSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Resources/SW_Blast"));
 }
 
-// Called when the game starts or when spawned
 void AInvadersEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	BeginFire();
 	if (FTimerHandle MoveTimer; !MoveTimer.IsValid())
 	{
 		GetWorldTimerManager().SetTimer(MoveTimer, this, &ThisClass::Move, 0.05, true);
@@ -76,16 +72,57 @@ void AInvadersEnemy::Move()
 	SetActorLocation(NewLocation);
 }
 
-void AInvadersEnemy::ChangeDirection()
+void AInvadersEnemy::ChangeDirection() const
 {
 	TArray <AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), StaticClass(), OutActors);
-		for (AActor* EnemyActor : OutActors)
+	for (AActor* EnemyActor : OutActors)
+	{
+		if
+			(AInvadersEnemy* Enemy = Cast<AInvadersEnemy>(EnemyActor))
 		{
-			if
-				(AInvadersEnemy* Enemy = Cast<AInvadersEnemy>(EnemyActor))
-				{
-					Enemy->MoveDirection *= -1.0;
-				}
+			Enemy->MoveDirection *= -1.0;
 		}
+	}
+}
+
+void AInvadersEnemy::BeginFire()
+{
+	const float FireDelay = FMath::RandRange(2.0, 5.0);
+	if (!ReloadTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().SetTimer(ReloadTimerHandle, this, &AInvadersEnemy::SpawnProjectile, FireDelay, false);
+	}
+}
+
+void AInvadersEnemy::SpawnProjectile()
+{
+	ProjectileCheck();
+	if (ProjectilesCount < ProjectilesMax)
+	{
+		const FVector SpawnLoc = GetActorLocation() + FVector(0.0, 0.0, -100.0);
+		if (UWorld* World = GetWorld())
+		{
+			World->SpawnActor<AActor>(ActorToSpawn, SpawnLoc, FRotator::ZeroRotator);
+			GetWorldTimerManager().ClearTimer(ReloadTimerHandle);
+			BeginFire();
+		}
+	}
+}
+
+void AInvadersEnemy::ProjectileCheck()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AInvadersProjectileEnemy::StaticClass(), OutActors);
+
+	TArray<AInvadersProjectileEnemy*> ProjectilesArray;
+	for (AActor* Actor : OutActors)
+	{
+		if (AInvadersProjectileEnemy* Projectile = Cast <AInvadersProjectileEnemy>(Actor))
+		{
+			ProjectilesArray.Add(Projectile);
+		}
+	}
+			ProjectilesCount = ProjectilesArray.Num();
+			UE_LOG(LogTemp, Warning, TEXT("actors: %d"), ProjectilesCount);
 }
