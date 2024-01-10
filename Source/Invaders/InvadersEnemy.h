@@ -25,8 +25,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UBoxComponent> EnemyCollision;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr <UStaticMeshComponent> EnemyMesh;
-	UPROPERTY(EditDefaultsOnly) TObjectPtr <UNiagaraSystem> NiagaraSystem;
-	UPROPERTY(EditDefaultsOnly) TObjectPtr <USoundBase> BlastSound;
+	UPROPERTY() TObjectPtr <UNiagaraSystem> NiagaraSystem;
+	UPROPERTY() TObjectPtr <USoundBase> BlastSound;
 	UPROPERTY(EditDefaultsOnly) TSubclassOf<AActor> ActorToSpawn;
 	
 	FTimerHandle ReloadTimerHandle;

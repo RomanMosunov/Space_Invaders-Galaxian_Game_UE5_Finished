@@ -1,21 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "InvadersShip.h"
-#include "Components/SphereComponent.h"
-#include"Components/StaticmeshComponent.h"
-#include "GameFramework/FloatingPawnMovement.h"
 #include "InvadersPlayerController.h"
+#include "InvadersProjectileEnemy.h"
+#include "Components/SphereComponent.h"
+#include "Components/StaticmeshComponent.h"
+#include "Components/InputComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "Components/InputComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
-// Sets default values
 AInvadersShip::AInvadersShip()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	ShipCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ShipCollision"));
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("ShipMovement"));
@@ -28,6 +24,7 @@ AInvadersShip::AInvadersShip()
 	ShipCollision->SetSphereRadius(50.0);
 	ShipMesh->SetupAttachment(ShipCollision);
 	ShipCollision->SetCollisionProfileName(TEXT("Pawn"));
+	ShipCollision->OnComponentBeginOverlap.AddDynamic(this, &AInvadersShip::ShipOverlap);
 	NiagaraSystem = LoadObject<UNiagaraSystem>(nullptr, TEXT("/Game/Resources/NS_Trace"));
 }
 
@@ -79,6 +76,11 @@ void AInvadersShip::SpawnActor()
 	}
 }
 
+void AInvadersShip::RestartLevel()
+{
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+}
+
 void AInvadersShip::SpawnTrace() const
 {
 	if (NiagaraSystem)
@@ -87,10 +89,12 @@ void AInvadersShip::SpawnTrace() const
 	}
 }
 
-// Called every frame
-void AInvadersShip::Tick(float DeltaTime)
+void AInvadersShip::ShipOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
+	if (Cast<AInvadersProjectileEnemy>(OtherActor)) {
+		ShipMesh->SetVisibility(false);
+		RestartLevel();
+	}
 }
 
 // Called to bind functionality to input

@@ -35,7 +35,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputAction>MoveAction;
 	UPROPERTY(EditDefaultsOnly) TObjectPtr<UInputAction>FireAction;
 	UPROPERTY(EditDefaultsOnly) TSubclassOf<AActor>ActorToSpawn;
-	UPROPERTY(EditDefaultsOnly) TObjectPtr <UNiagaraSystem> NiagaraSystem;
+	UPROPERTY() TObjectPtr <UNiagaraSystem> NiagaraSystem;
 
 	FTimerHandle ReloadTimerHandle;
 	bool CanShoot = true;
@@ -45,11 +45,9 @@ protected:
 	void Fire(const FInputActionValue& Value);
 	void Reload();
 	void SpawnActor();
+	void RestartLevel();
 	UFUNCTION() void SpawnTrace() const;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION() void ShipOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

@@ -124,5 +124,4 @@ void AInvadersEnemy::ProjectileCheck()
 		}
 	}
 			ProjectilesCount = ProjectilesArray.Num();
-			UE_LOG(LogTemp, Warning, TEXT("actors: %d"), ProjectilesCount);
 }

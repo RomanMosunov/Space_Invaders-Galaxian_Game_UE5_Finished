@@ -1,11 +1,11 @@
 // Copy Right
 
 #include "InvadersProjectile.h"
+#include "InvadersEnemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "InvadersEnemy.h"
 #include "Components/BrushComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 AInvadersProjectile::AInvadersProjectile()
 {

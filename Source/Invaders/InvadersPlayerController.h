@@ -6,9 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "InvadersPlayerController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class INVADERS_API AInvadersPlayerController : public APlayerController
 {
