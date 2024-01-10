@@ -2,6 +2,7 @@
 
 #include "InvadersProjectileEnemy.h"
 #include "InvadersShip.h"
+#include "InvadersWall.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BrushComponent.h"
@@ -30,8 +31,16 @@ AInvadersProjectileEnemy::AInvadersProjectileEnemy()
 
 void AInvadersProjectileEnemy::ProjectileOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<AInvadersShip>(OtherActor) || Cast<UBrushComponent>(OtherComp))
+	if (Cast<AInvadersShip>(OtherActor) || Cast<UBrushComponent>(OtherComp) || (Cast<AInvadersWall>(OtherActor)))
 	{
-		Destroy();
+		if (FTimerHandle Delay; !Delay.IsValid())
+		{
+			GetWorldTimerManager().SetTimer(Delay, this, &ThisClass::DelayedDestroy, 0.02, false);
+		}
 	}
+}
+
+void AInvadersProjectileEnemy::DelayedDestroy()
+{
+	Destroy();
 }
